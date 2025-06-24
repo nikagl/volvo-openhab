@@ -189,7 +189,14 @@ val Functions$Function1 <String, String> authenticateVolvo = [
 			val password = volvopassword.state.toString()
 
 			// Step 2: POST username and password
-			val checkUsernameUrl = transform("JSONPATH", "$._links.checkUsernamePassword.href", authResponse) + "?action=checkUsernamePassword"
+                        var rawUrl = transform("JSONPATH", "$._links.checkUsernamePassword.href", authResponse)
+                        var checkUsernameUrl = ""
+                        if (rawUrl.startsWith("http://")) {
+                                checkUsernameUrl = "https://" + rawUrl.substring(7)
+                        } else {
+                                checkUsernameUrl = rawUrl
+                        }
+                        checkUsernameUrl = checkUsernameUrl + "?action=checkUsernamePassword"
 			var checkUsernameContentType = "application/json"
 			val checkUsernameContent = '{"username": "' + username + '", "password": "' + password + '"}'
 			val checkUsernameHeaders = newHashMap(
